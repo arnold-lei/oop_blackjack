@@ -8,39 +8,42 @@
 #@deck = [[hearts, 1], [heart, 2],...]
 
 class Deck
-	attr_accessor :deck
+	attr_accessor :deck, :card
 	attr_reader :values, :suits 
 	def initialize
-		@deck = []
+		@card = []
 		@values = %w{2 3 4 5 6 7 8 9 J Q K A}
 		@suits = %w{♦ ♣ ♥ ♠}
 		@suits.each do |suit|
-			(@values.size).times do |card|
-				@deck.push(Card.new(values[card], suit, (card+1)))
+			(@values).each do |value|
+				@card << Card.new(value, suit,)
 			end
 		end		
 	end
 	
 	def shuffle!
-		@deck.shuffle!
+		card.shuffle!
 	end
 	
 	def deal(player)
-		card = @deck.pop
-		player.hand << card
+		card.pop
 	end
 end
 
 class Card
-	attr_reader :value, :suit, :rank
-	def initialize (value, suit, rank)
+	attr_reader :value, :suit
+	def initialize (value, suit)
+		@card = []
 		@value = value 
 		@suit = suit 
-		@rank = rank
 	end
-	
+
+	def pretty_output
+		puts "The #{value} of #{suit}"
+	end
+
 	def to_s
-		p "The #{value} #{@suit}"
+		pretty_output
 	end
 end
 
@@ -49,6 +52,17 @@ class Player
 	def initialize(name)
 		@name = name 
 		@hand = []
+	end
+	def display_hand
+		@hand.each do |card|
+			card.to_s
+		end
+	end
+	def hand_total
+		value = @hand.each do |cards|
+			 cards
+		end
+		puts value
 	end
 end
 
@@ -73,7 +87,8 @@ class Game
 		@deck = Deck.new
 	end
 
-	def deal
+	def calc_winner
+
 	end
 
 	def intro 
@@ -88,10 +103,14 @@ class Game
 		@deck.deal(@cpu)
 
 		puts @cpu.name
-		p @cpu.hand
+		@cpu.display_hand
+		@cpu.hand_total
 
 		puts @player.name
-		p @player.hand
+		@player.display_hand
+		@player.hand_total
+
+
 	end
 end
 game = Game.new.play

@@ -28,6 +28,7 @@ class Deck
 	def deal(player)
 		card = @deck.pop
 		player.hand << card
+		return card
 	end
 end
 
@@ -89,7 +90,7 @@ class Player
 		end
 
 	def is_busted?
-    total > Blackjack::BLACKJACK
+    hand_total > Blackjack::BLACKJACK
   end
 end
 
@@ -141,25 +142,47 @@ class Blackjack
 		cpu.display_hand
 	end
 
+	def blackjack_or_bust?(player_or_dealer)
+		if player_or_dealer.hand_total == 21
+			if player_or_dealer.is_a?(Computer)
+				puts "Sorry #{player.name}, dealer hit BlackJack. #{player.name} lose. "
+			else 
+				puts "Congratulations, you hit Blackjack! #{player.name} win!"
+			end
+		elsif player_or_dealer.is_busted?
+			if player_or_dealer.is_a?(Computer)
+				puts "Congratulations dealer busted. #{player.name} win! "
+			else 
+				puts "Sorry you busted. #{player.name} lose!"
+			end
+			exit
+		end
+	end
+
 	def player_turn
 
+		blackjack_or_bust?(player)
 		while !player.is_busted?
 			puts "#{player.name}'s turn you currently have #{player.score} what would you like to do?"
-			Puts "Would you like to 1) Hit or 2) Stay"
+			puts "Would you like to 1) Hit or 2) Stay"
 			choice = gets.chomp.to_s
-			if ! w%[1,2].include?(choice)
+			
+			if !["1","2"].include?(choice)
 				puts "Error: you must type 1 or 2."
-			next
-
+				next
+			end
 			if choice == '2'
 				puts "#{player.name} chose to stay."
 				break
 			end
 
 			new_card = @deck.deal(player)
-			puts "Dealing card to #{player.name};"
-			puts "You are dealt a #{new_card}" 
+			puts "You are dealt a #{new_card.value} of #{new_card.suit}" 
+			puts "You're total is #{@player.hand_total}"
+
+			blackjack_or_bust?(@player)
 		end
+		puts "#{player.name} stays"
 	end
 
 	def hit_stay
